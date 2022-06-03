@@ -25,16 +25,6 @@ namespace ImagX_API.Repositories
             return rowsAffected > 0 ? entity : null;
         }
 
-        public async  Task<bool> AddBuddy(BuddyRequest buddyRequest)
-        {
-            var sender = await _context.Users.FirstOrDefaultAsync(x => x.Id ==  buddyRequest.SenderId);
-            if (sender is null)
-                return false;
-
-            var receipient = await _context.Users.FirstOrDefaultAsync(x => x.Id == buddyRequest.RecipientId);
-            sender.Buddies.Add(receipient);
-            return await _context.SaveChangesAsync() > 0;
-        }
 
         public async Task<bool> Exists(string id)
         {
@@ -47,6 +37,16 @@ namespace ImagX_API.Repositories
                 return await _context.Users.ToListAsync();
 
             return null;
+        }
+
+        public async Task<ICollection<AppUser>> GetBuddies(string id)
+        {
+            var friendships = _context.Friendships.Where(x => x.User1ID == id || x.User2ID == id);
+            var firstSet = friendships.Select(x => x.User1).Where(x => x.Id != id).ToList();
+            var secondSet = friendships.Select(x => x.User2).Where(x => x.Id != id).ToList();
+
+           var buddies =  Enumerable.Concat(firstSet, secondSet);
+           return await  Task.Run(() => buddies.ToList());
         }
 
         public async Task<AppUser> GetById(string id)

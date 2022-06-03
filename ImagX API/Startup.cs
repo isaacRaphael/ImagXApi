@@ -1,6 +1,7 @@
 using ImagX_API.Contracts;
 using ImagX_API.Data;
 using ImagX_API.Entities;
+using ImagX_API.Repositories;
 using ImagX_API.Repositories.Config;
 using ImagX_API.Services;
 using ImagX_API.Services.HelperClasses;
@@ -37,8 +38,13 @@ namespace ImagX_API
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(Configuration.GetConnectionString("Default")));
             services.AddAutoMapper(AppDomain.CurrentDomain.GetAssemblies());
             services.AddScoped<IUnitOfWork, UnitOfWork>();
+            services.AddScoped<IUserRepository, UserRepository>();
+            services.AddScoped<IBuddyRequestRepository, BuddyRequestRepository>();
+            services.AddScoped<IPostRepository, PostRepository>();
+            services.AddScoped<IImageService, ImageService>();
             services.AddScoped<EmailService>();
             services.Configure<MailjetObj>(Configuration.GetSection("mailjet"));
+            services.Configure<CloudinaryObj>(Configuration.GetSection("cloudinary"));
             services.AddIdentity<AppUser, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 5;

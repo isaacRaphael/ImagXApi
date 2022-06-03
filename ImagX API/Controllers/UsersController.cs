@@ -57,6 +57,16 @@ namespace ImagX_API.Controllers
             return Ok(_mapper.Map<ICollection<UserResponseDto>>(collection));
         }
 
+        [HttpGet("Buddies/{id}")]
+        public async Task<ActionResult<ICollection<UserResponseDto>>> GetBuddies(string id)
+        {
+            var buddies = await _unitOfWork.Users.GetBuddies(id);
+            if (buddies is null)
+                return NotFound();
+
+            return Ok(_mapper.Map<ICollection<UserResponseDto>>(buddies));
+        }
+
         [HttpDelete("{id}")]
         public async Task<ActionResult> RemoveUser(string id)
         {
@@ -78,6 +88,8 @@ namespace ImagX_API.Controllers
             return Ok(new { Success = true, Message = "Updated User" });
 
         }
+
+     
 
     }
 }

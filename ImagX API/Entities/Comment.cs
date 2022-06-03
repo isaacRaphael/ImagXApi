@@ -7,7 +7,10 @@ namespace ImagX_API.Entities
 {
     public class Comment : BaseEntity
     {
-        
+        public Comment()
+        {
+            Created = DateTime.UtcNow;
+        }
         public string PayLoad { get; set; }
         public DateTime Posted { get; set; }
         public Post Post { get; set; }

@@ -19,7 +19,7 @@ namespace ImagX_API.Entities
         public override string UserName { get; set; }
         public DateTime DOB { get; set; }
         public ICollection<Post> Posts { get; set; }
-        public ICollection<AppUser> Buddies { get; set; }
+        public ICollection<AppUser> Buddies { get; set; } = new List<AppUser>();
         public ICollection<Like> MyLikes { get; set; }
         public ICollection<Comment> Comments { get; set; }
         public ICollection<Reply> Replies { get; set; }

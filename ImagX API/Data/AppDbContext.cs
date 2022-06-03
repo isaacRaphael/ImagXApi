@@ -24,7 +24,7 @@ namespace ImagX_API.Data
         public DbSet<LikeNotification> LikeNotifications { get; set; }
         public DbSet<PostNotification> PostNotifications { get; set; }
         public DbSet<RequestNotification> RequestNotifications { get; set; }
-
+        public DbSet<Friendship> Friendships { get; set; }
 
     }
 }

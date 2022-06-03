@@ -8,6 +8,10 @@ namespace ImagX_API.Entities
 {
     public class BuddyRequest : BaseEntity
     {
+        public BuddyRequest()
+        {
+            Created = DateTime.UtcNow;
+        }
         public string RecipientId { get; set; }
         public string SenderId { get; set; }
     }

@@ -8,6 +8,8 @@ namespace ImagX_API.Contracts
     public interface IUnitOfWork
     {
         public IUserRepository Users { get; set; }
+        public IBuddyRequestRepository Buddies { get; set; }
+        public IPostRepository Posts { get; set; }
 
     }
 }

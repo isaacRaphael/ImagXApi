@@ -10,15 +10,20 @@ namespace ImagX_API.Repositories.Config
 {
     public class UnitOfWork : IUnitOfWork
     {
-        private readonly AppDbContext _context;
 
-        public UnitOfWork(AppDbContext context)
+        public UnitOfWork(AppDbContext context, IUserRepository userRepository, IBuddyRequestRepository buddyRequestRepository, IPostRepository postRepository)
         {
-            _context = context;
-            Users = new UserRepository(_context);
+            
+            Users = userRepository;
+            Buddies = buddyRequestRepository;
+            Posts = postRepository;
             
         }
 
         public IUserRepository Users { get; set; }
+        public IBuddyRequestRepository Buddies { get; set; }
+        public IPostRepository Posts { get; set; }
+
+
     }
 }
