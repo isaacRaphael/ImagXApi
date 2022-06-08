@@ -60,6 +60,11 @@ namespace ImagX_API.Repositories
             return await _context.Users.Skip((page - 1) * pageSize).Take(pageSize).OrderBy(x => x.Created).ToListAsync();
         }
 
+        public Task<bool> Hasfriend(string friendId, string receipientId)
+        {
+            return _context.Friendships.AnyAsync(x => (x.User1ID == friendId && x.User2ID == receipientId) || (x.User1ID == receipientId && x.User2ID == friendId));
+        }
+
         public async Task<bool> Remove(string id)
         {
             var toremove = await _context.Users.FirstOrDefaultAsync(x => x.Id == id);

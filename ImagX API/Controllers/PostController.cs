@@ -4,6 +4,7 @@ using ImagX_API.DTOs.InComing;
 using ImagX_API.DTOs.OutGoing;
 using ImagX_API.Entities;
 using Microsoft.AspNetCore.Http;
+using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
 using System;
 using System.Collections.Generic;
@@ -40,11 +41,12 @@ namespace ImagX_API.Controllers
 
         }
 
-        [HttpGet("Chronological")]
+        [HttpGet]
+        [Route("Chronological")]
         public async Task<ActionResult<ICollection<PostResponseDto>>> GetAllChronological()
         {
             var posts = await _unitOfWork.Posts.GetAll();
-            var chronoLogical = posts.OrderByDescending(x => x.Created);
+            var chronoLogical = posts.OrderByDescending(x => x.Created).ToList();
             if (posts is null)
                 return NotFound(new { Success = false, Message = "Coudnt access posts" });
 
@@ -66,7 +68,7 @@ namespace ImagX_API.Controllers
         public async Task<ActionResult<ICollection<PostResponseDto>>> GetPaginatedandChronological([FromQuery] int page = 1, [FromQuery] int size = 10)
         {
             var posts = await _unitOfWork.Posts.GetPaginated(page,size);
-            var chronoLogical = posts.OrderByDescending(x => x.Created);
+            var chronoLogical = posts.OrderByDescending(x => x.Created).ToList();
             if (posts is null)
                 return NotFound(new { Success = false, Message = "Coudnt access posts" });
 
@@ -75,10 +77,10 @@ namespace ImagX_API.Controllers
         }
 
         [HttpGet("PopularPostPAginated")]
-        public async Task<ActionResult<ICollection<PostResponseDto>>> GetPopularPaginated([FromQuery] int page = 1, [FromQuery] int size = 10)
+        public async Task<ActionResult<ICollection<PostResponseDto>>> GetPopularPaginated([FromQuery] int page = 1, [FromQuery] int size = 10, string metric = "Likes")
         {
             var posts = await _unitOfWork.Posts.GetPaginated(page, size);
-            var chronoLogical = posts.OrderByDescending(x => x.Likes?.Count + x.Comments?.Count);
+            var chronoLogical = posts.OrderByDescending(x => _unitOfWork.Likes.LikesOfAPost(x.Id).Result.Count).ToList();
             if (chronoLogical is null)
                 return NotFound(new { Success = false, Message = "Coudnt access posts" });
 
@@ -147,6 +149,41 @@ namespace ImagX_API.Controllers
                 return  StatusCode(501 , new { Success = false, Message = "Action not carried out"});
 
             return Ok(new { Success = true, Message = "Post Created" });
+
+        }
+
+        [HttpGet("Likes/{postId}")]
+        public async Task<ActionResult<ICollection<LikeResponseDto>>> GetPostLikes(int postId)
+        {
+            var Likes = await _unitOfWork.Likes.LikesOfAPost(postId);
+            if (Likes is null)
+                return BadRequest();
+
+
+            return Ok(_mapper.Map<ICollection<LikeResponseDto>>(Likes));
+
+        }
+
+        [HttpGet("LikeCount/{postId}")]
+        public async Task<ActionResult> GetPostLikeCount(int postId)
+        {
+            var Likes = await _unitOfWork.Likes.LikesOfAPost(postId);
+            if (Likes is null)
+                return BadRequest();
+
+
+            return Ok(new {Success = true, Count = Likes.Count});
+
+        }
+
+        [HttpPatch("{id}")]
+        public async Task<ActionResult> UpdateComment([FromBody] JsonPatchDocument entity, [FromRoute] int id)
+        {
+            var patch = await _unitOfWork.Posts.Update(entity, id);
+            if (!patch)
+                return NotFound(new { Success = false, Message = "No such post" });
+
+            return Ok(new { Success = true, Message = "Updated post" });
 
         }
 

@@ -1,6 +1,7 @@
 using ImagX_API.Contracts;
 using ImagX_API.Data;
 using ImagX_API.Entities;
+using ImagX_API.Hubs;
 using ImagX_API.Repositories;
 using ImagX_API.Repositories.Config;
 using ImagX_API.Services;
@@ -42,9 +43,12 @@ namespace ImagX_API
             services.AddScoped<IBuddyRequestRepository, BuddyRequestRepository>();
             services.AddScoped<IPostRepository, PostRepository>();
             services.AddScoped<IImageService, ImageService>();
+            services.AddScoped<ILikeRepository, LikeRepository>();
+            services.AddScoped<ICommentRepository, CommentRepository>();
             services.AddScoped<EmailService>();
             services.Configure<MailjetObj>(Configuration.GetSection("mailjet"));
             services.Configure<CloudinaryObj>(Configuration.GetSection("cloudinary"));
+            services.AddSignalR(cfg => cfg.EnableDetailedErrors = true);
             services.AddIdentity<AppUser, IdentityRole>(options =>
             {
                 options.Password.RequiredLength = 5;
@@ -69,17 +73,23 @@ namespace ImagX_API
                 app.UseSwagger();
                 app.UseSwaggerUI(c => c.SwaggerEndpoint("/swagger/v1/swagger.json", "ImagX_API v1"));
             }
+            
 
             app.UseHttpsRedirection();
 
             app.UseRouting();
 
             app.UseAuthorization();
+            
+
+
 
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
+                endpoints.MapHub<NotificationHub<BuddyRequest>>("/notificationhub");
             });
+            
         }
     }
 }

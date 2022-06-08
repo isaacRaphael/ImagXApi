@@ -10,6 +10,7 @@ namespace ImagX_API.Entities
         public Comment()
         {
             Created = DateTime.UtcNow;
+            Posted = DateTime.UtcNow;
         }
         public string PayLoad { get; set; }
         public DateTime Posted { get; set; }
@@ -17,6 +18,6 @@ namespace ImagX_API.Entities
         public int PostId { get; set; }
         public AppUser AppUser { get; set; }
         [ForeignKey(nameof(AppUserId))]
-        public int AppUserId { get; set; }
+        public string AppUserId { get; set; }
     }
 }
