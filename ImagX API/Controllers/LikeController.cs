@@ -1,6 +1,8 @@
 ﻿using ImagX_API.Contracts;
 using ImagX_API.DTOs.InComing;
 using ImagX_API.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using System;
@@ -10,6 +12,7 @@ using System.Threading.Tasks;
 
 namespace ImagX_API.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class LikeController : ControllerBase
@@ -42,6 +45,16 @@ namespace ImagX_API.Controllers
             var result = await _unitOfWork.Likes.Add(like);
             if (result is null)
                 return NotFound(new { Success = false, Message = "error adding like" });
+
+             var newNotification = new Notification
+            {
+                RecipientID = post.AppUserId,
+                SenderID = poster.Id,
+                ActionType = "Like",
+                Created = DateTime.UtcNow,
+                ActionId = result.Id
+            };
+            await _unitOfWork.Notifications.Add(newNotification);
 
             return Ok(new { Success = true, Message = "Like added success fully" });
 

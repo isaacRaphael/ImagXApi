@@ -33,5 +33,67 @@ namespace ImagX_API.Services
             return uploadResult.Url.AbsoluteUri;
 
         }
+
+        public async Task<string> AddWithCompression(string path, int compressionIndex)
+        {
+            var myAccount = new Account { ApiKey = _options.Key, ApiSecret = _options.Secret, Cloud = _options.Name };
+            Cloudinary _cloudinary = new(myAccount);
+
+            var uploadParams = new ImageUploadParams()
+            {
+                File = new FileDescription(path),
+                Transformation = new Transformation().Quality(compressionIndex)
+            };
+
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            return uploadResult.Url.AbsoluteUri;
+        }
+
+        public async Task<string> AddWithDimensions(string path, int width, int height)
+        {
+            var myAccount = new Account { ApiKey = _options.Key, ApiSecret = _options.Secret, Cloud = _options.Name };
+            Cloudinary _cloudinary = new(myAccount);
+
+            var uploadParams = new ImageUploadParams()
+            {
+                File = new FileDescription(path),
+                Transformation = new Transformation().Width(width).Height(height)
+            };
+
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            return uploadResult.Url.AbsoluteUri;
+        }
+
+        public  async Task<string> AddWithFilter(string path, string filter)
+        {
+            var myAccount = new Account { ApiKey = _options.Key, ApiSecret = _options.Secret, Cloud = _options.Name };
+            Cloudinary _cloudinary = new(myAccount);
+
+            var uploadParams = new ImageUploadParams()
+            {
+                File = new FileDescription(path),
+                Transformation = new Transformation().Effect($"art:{filter}")
+            };
+
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            return uploadResult.Url.AbsoluteUri;
+        }
+
+        public async Task<string> ChangeFormat(string path, string format)
+        {
+            var myAccount = new Account { ApiKey = _options.Key, ApiSecret = _options.Secret, Cloud = _options.Name };
+            Cloudinary _cloudinary = new(myAccount);
+
+            var uploadParams = new ImageUploadParams()
+            {
+                File = new FileDescription(path),
+                
+            };
+
+            uploadParams.Format = format;
+
+            var uploadResult = await _cloudinary.UploadAsync(uploadParams);
+            return uploadResult.Url.AbsoluteUri;
+        }
     }
 }

@@ -47,5 +47,15 @@ namespace ImagX_API.Repositories
 
             return await Task.FromResult(res);
         }
+
+        public async Task<bool> UpdateImages(Post post)
+        {
+            var thepost =await  _context.Posts.FirstOrDefaultAsync(p => p.Id == post.Id);
+            if (post is null)
+                return false;
+
+            _context.Posts.Update(post);
+            return await _context.SaveChangesAsync() > 0;
+        }
     }
 }

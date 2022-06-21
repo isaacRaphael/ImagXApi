@@ -7,11 +7,13 @@ using System.Threading.Tasks;
 
 namespace ImagX_API.Hubs
 {
-    public class NotificationHub<T> : Hub
+    public class NotificationHub : Hub
     {
-        public async Task NewCallReceived(Notification<T> newNotification)
+        public async Task NewNotificationReceived(Notification newNotification, string receiverConnectionId)
         {
-            await Clients.All.SendAsync("NewCallReceived" , newNotification);
+            await Clients.Client(receiverConnectionId).SendAsync("NewNotificationReceived" , newNotification);
         }
+
+        public string GetDonnectionId() => Context.ConnectionId;
     }
 }

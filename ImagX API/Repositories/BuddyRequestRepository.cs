@@ -18,22 +18,6 @@ namespace ImagX_API.Repositories
             _context = context;
         }
 
-        
-        public async Task<bool> AddBuddy(BuddyRequest buddyRequest)
-        {
-            _context.BuddyRequests.Add(buddyRequest);
-            var result = await _context.SaveChangesAsync();
-            if (result <= 0)
-                return false;
-
-            var newNotification = new RequestNotification { 
-                RecipientID = buddyRequest.RecipientId, 
-                SenderID = buddyRequest.SenderId,
-                Action = buddyRequest, Created = DateTime.UtcNow 
-            };
-            _context.RequestNotifications.Add(newNotification);
-            return await _context.SaveChangesAsync() > 0;
-        }
 
         public async  Task<bool> ConfirmBuddyRequest(int id)
         {

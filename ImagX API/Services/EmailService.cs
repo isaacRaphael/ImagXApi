@@ -40,22 +40,29 @@ namespace ImagX_API.Services
                   }},
                  {"Subject", model.Title},
                  {"TextPart", "Greetings from IMagX!"},
-                 {"HTMLPart", "<h3>Dear User, welcome to <p>ImagX</a>!</h3><br />May the photo force be with you!"}
+                 {"HTMLPart", $"{model.Body}"}
                  }
                 });
-            MailjetResponse response = await client.PostAsync(request);
-            if (response.IsSuccessStatusCode)
+            try
             {
-                Console.WriteLine(string.Format("Total: {0}, Count: {1}\n", response.GetTotal(), response.GetCount()));
-                Console.WriteLine(response.GetData());
-            }
-            else
+                MailjetResponse response = await client.PostAsync(request);
+                if (response.IsSuccessStatusCode)
+                {
+                    Console.WriteLine(string.Format("Total: {0}, Count: {1}\n", response.GetTotal(), response.GetCount()));
+                    Console.WriteLine(response.GetData());
+                }
+                else
+                {
+                    Console.WriteLine(string.Format("StatusCode: {0}\n", response.StatusCode));
+                    Console.WriteLine(string.Format("ErrorInfo: {0}\n", response.GetErrorInfo()));
+                    Console.WriteLine(response.GetData());
+                    Console.WriteLine(string.Format("ErrorMessage: {0}\n", response.GetErrorMessage()));
+                }
+            }catch (Exception ex)
             {
-                Console.WriteLine(string.Format("StatusCode: {0}\n", response.StatusCode));
-                Console.WriteLine(string.Format("ErrorInfo: {0}\n", response.GetErrorInfo()));
-                Console.WriteLine(response.GetData());
-                Console.WriteLine(string.Format("ErrorMessage: {0}\n", response.GetErrorMessage()));
+                Console.WriteLine(ex);
             }
+            
         }
     }
 }

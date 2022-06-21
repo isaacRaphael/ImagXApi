@@ -3,6 +3,8 @@ using ImagX_API.Contracts;
 using ImagX_API.DTOs.InComing;
 using ImagX_API.DTOs.OutGoing;
 using ImagX_API.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -13,6 +15,8 @@ using System.Threading.Tasks;
 
 namespace ImagX_API.Controllers
 {
+
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class CommentController : ControllerBase
@@ -62,6 +66,16 @@ namespace ImagX_API.Controllers
             {
                 return BadRequest(new { Success = false, Message = "comment was not created" });
             }
+
+            var newNotification = new Notification
+            {
+                RecipientID = post.AppUserId,
+                SenderID = commenter.Id,
+                ActionType = "Comment",
+                Created = DateTime.UtcNow,
+                ActionId = result.Id
+            };
+            await _unitOfWork.Notifications.Add(newNotification);
 
             return Ok(new { Success = true, Message = "Comment created successfully" });
         }

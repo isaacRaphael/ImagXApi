@@ -20,11 +20,15 @@ namespace ImagX_API.Data
         public DbSet<Like> Likes { get; set; }
         public DbSet<Post> Posts { get; set; }
         public DbSet<Reply> Replies { get; set; }
-        public DbSet<CommentNotification> CommentNotifications { get; set; }
-        public DbSet<LikeNotification> LikeNotifications { get; set; }
-        public DbSet<PostNotification> PostNotifications { get; set; }
-        public DbSet<RequestNotification> RequestNotifications { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
         public DbSet<Friendship> Friendships { get; set; }
+        public DbSet<Chat> Chats { get; set; }
+        public DbSet<ChatMessage> ChatMessages { get; set; }
+        public DbSet<SharingKey> Keys { get; set; }
+        public DbSet<ResetToken> ResetTokens { get; set; }
+        public DbSet<Package> Packages { get; set; }
+
+
 
     }
 }

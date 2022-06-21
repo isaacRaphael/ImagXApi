@@ -2,6 +2,9 @@
 using ImagX_API.Contracts;
 using ImagX_API.DTOs.InComing;
 using ImagX_API.DTOs.OutGoing;
+using ImagX_API.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.JsonPatch;
@@ -13,17 +16,20 @@ using System.Threading.Tasks;
 
 namespace ImagX_API.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class UsersController : ControllerBase
     {
         private readonly IUnitOfWork _unitOfWork;
         private readonly IMapper _mapper;
+        private readonly UserManager<AppUser> _userManager;
 
-        public UsersController(IUnitOfWork unitOfWork, IMapper mapper)
+        public UsersController(IUnitOfWork unitOfWork, IMapper mapper, UserManager<AppUser> userManager)
         {
             _unitOfWork = unitOfWork;
             _mapper = mapper;
+            _userManager = userManager;
         }
 
 
@@ -44,6 +50,16 @@ namespace ImagX_API.Controllers
             var user = await _unitOfWork.Users.GetById(id);
             if (user is null)
                 return NotFound();
+            return Ok(_mapper.Map<UserResponseDto>(user));
+        }
+
+        [HttpGet("ByEmail")]
+        public async Task<ActionResult<UserResponseDto>> GetByEmail(string email)
+        {
+            var user = await _userManager.FindByEmailAsync(email);
+            if (user is null)
+                return NotFound(new { Success = false, Message = "User not found" });
+
             return Ok(_mapper.Map<UserResponseDto>(user));
         }
 
@@ -81,6 +97,19 @@ namespace ImagX_API.Controllers
         [HttpPatch("{id}")]
         public async Task<ActionResult> UpdateUser([FromBody] JsonPatchDocument entity, [FromRoute] string id)
         {
+            var patch = await _unitOfWork.Users.Update(entity, id);
+            if (!patch)
+                return NotFound(new { Success = false, Message = "No such user" });
+
+            return Ok(new { Success = true, Message = "Updated User" });
+
+        } 
+        
+        
+        [HttpPatch("UpdateConnection/{id}")]
+        public async Task<ActionResult> UpdateUserConnection([FromBody] JsonPatchDocument entity, [FromRoute] string id)
+        {
+
             var patch = await _unitOfWork.Users.Update(entity, id);
             if (!patch)
                 return NotFound(new { Success = false, Message = "No such user" });

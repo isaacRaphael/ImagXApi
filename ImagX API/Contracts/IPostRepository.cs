@@ -8,6 +8,7 @@ namespace ImagX_API.Contracts
     {
         Task<ICollection<Post>> GetPostByUser(string id);
         Task<ICollection<Post>> GetPostsOfBuddies(string id);
+        Task<bool> UpdateImages(Post post);
     }
     
 }

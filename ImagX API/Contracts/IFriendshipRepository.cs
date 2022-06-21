@@ -8,5 +8,7 @@ namespace ImagX_API.Contracts
 {
     public interface IFriendshipRepository : IGenericRepository<Friendship>
     {
+        Task<ICollection<AppUser>> GetFriendsOfUser(string id);
+        Task<bool> RemoveFriendOfUser(string PartyAId, string PartyBId);
     }
 }

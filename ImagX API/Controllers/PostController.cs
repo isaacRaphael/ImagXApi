@@ -3,6 +3,8 @@ using ImagX_API.Contracts;
 using ImagX_API.DTOs.InComing;
 using ImagX_API.DTOs.OutGoing;
 using ImagX_API.Entities;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.JsonPatch;
 using Microsoft.AspNetCore.Mvc;
@@ -14,6 +16,7 @@ using System.Threading.Tasks;
 
 namespace ImagX_API.Controllers
 {
+    [Authorize(AuthenticationSchemes = JwtBearerDefaults.AuthenticationScheme)]
     [Route("api/[controller]")]
     [ApiController]
     public class PostController : ControllerBase
@@ -125,7 +128,7 @@ namespace ImagX_API.Controllers
                 var filePath = Path.GetTempFileName();
                 using (var stream = System.IO.File.Create(filePath))
                 {
-                    await objfile.Media.CopyToAsync(stream);
+                    objfile.Media.CopyTo(stream);
 
                 }
                 var result = await _imageService.AddImage(filePath);
@@ -141,7 +144,7 @@ namespace ImagX_API.Controllers
                 Caption = objfile.Caption,
                 Created = DateTime.UtcNow,
                 AppUserId = poster.Id,
-                ImageUrl = imgUrl,
+                ImageUri = imgUrl,
             };
 
             var mainResult = _unitOfWork.Posts.Add(post);
@@ -177,7 +180,7 @@ namespace ImagX_API.Controllers
         }
 
         [HttpPatch("{id}")]
-        public async Task<ActionResult> UpdateComment([FromBody] JsonPatchDocument entity, [FromRoute] int id)
+        public async Task<ActionResult> UpdatePost([FromBody] JsonPatchDocument entity, [FromRoute] int id)
         {
             var patch = await _unitOfWork.Posts.Update(entity, id);
             if (!patch)

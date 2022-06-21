@@ -16,7 +16,7 @@ namespace ImagX_API.Entities
 
         }
         public string Caption { get; set; }
-        public string ImageUrl { get; set; }
+        public string ImageUri { get; set; }
         public AppUser AppUser { get; set; }
         [ForeignKey(nameof(AppUserId))]
         public string AppUserId { get; set; }

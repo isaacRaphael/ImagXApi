@@ -6,7 +6,6 @@ namespace ImagX_API.Contracts
 {
     public interface IBuddyRequestRepository : IGenericRepository<BuddyRequest>
     {
-        Task<bool> AddBuddy(BuddyRequest buddyRequest);
         Task<bool> ConfirmBuddyRequest(int id);
     }
     
