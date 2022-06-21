@@ -150,7 +150,7 @@ namespace ImagX_API
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
-        public void Configure(IApplicationBuilder app, IWebHostEnvironment env)
+        public void Configure(IApplicationBuilder app, AppDbContext context)
         {
             
             app.UseDeveloperExceptionPage();
@@ -167,7 +167,7 @@ namespace ImagX_API
             app.UseAuthorization();
 
 
-
+            context.Database.EnsureCreated();
             app.UseEndpoints(endpoints =>
             {
                 endpoints.MapControllers();
